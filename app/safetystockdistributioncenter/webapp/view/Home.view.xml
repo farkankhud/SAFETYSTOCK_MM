@@ -1,0 +1,114 @@
+<mvc:View controllerName="safetystockdistributioncenter.controller.Home"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:layout="sap.ui.layout"
+    xmlns:fb="sap.ui.comp.filterbar"
+    xmlns:core="sap.ui.core"
+	xmlns:t = "sap.ui.table">
+    <Page title="{i18n>title}" enableScrolling="false">
+        <content>
+            <f:DynamicPage  toggleHeaderOnTitleClick="true">
+                 <f:title>
+                        <f:DynamicPageTitle class="sapFDynamicPageTitle">
+                        </f:DynamicPageTitle>
+                </f:title>
+                <f:header>
+                    <f:DynamicPageHeader pinnable="true">
+                        <f:content>
+                            <fb:FilterBar class="sapUiTinyMargin" useToolbar="false" reset="onReset" search="onSearch" showFilterConfiguration="false" filtersDialogClosed = "onFiltersDialogClosed" showRestoreButton="true">
+                                <fb:filterGroupItems>
+                                    <fb:FilterGroupItem groupName="DC" name="Site" label="{i18n>site}" visibleInFilterBar="true" mandatory="true">
+                                        <fb:control>
+                                            <MultiInput id="idSite" valueHelpOnly="true" valueHelpRequest="onStoreIdVHReq" tokenUpdate="setBlurOnTable" width="1rem"></MultiInput>
+                                        </fb:control>
+                                    </fb:FilterGroupItem>
+                                    <fb:FilterGroupItem groupName="DC" name="DateRange" label="{i18n>dateRange}" visibleInFilterBar="true"  mandatory="true">
+                                        <fb:control>
+                                            <DateRangeSelection id="idDateRange" displayFormat="MM/dd/yyyy" change="handleChange"/>
+                                        </fb:control>
+                                    </fb:FilterGroupItem>
+                                    <fb:FilterGroupItem groupName="DC" name="Article" label="{i18n>article}" visibleInFilterBar="true">
+                                        <fb:control>
+                                            <MultiInput id="idArticle" valueHelpOnly="true" valueHelpRequest="onArticleIdVHReq" tokenUpdate="setBlurOnTable" width="1rem"></MultiInput>
+                                        </fb:control>
+                                    </fb:FilterGroupItem>
+                                </fb:filterGroupItems>
+                            </fb:FilterBar>
+                        </f:content>
+                    </f:DynamicPageHeader>
+                </f:header>
+                <f:content>
+                    <t:Table id="idDataTable" rowSelectionChange="onSelectionChange" enableBusyIndicator="true" selectionMode="Multi" enableColumnReordering="true" threshold="auto"  visibleRowCountMode="Auto" showColumnVisibilityMenu="true" alternateRowColors="true">
+                        <t:extension>
+                            <OverflowToolbar>
+                                <Title text="{parts:['i18n>items','appModel>/tableDataCount']}"/>
+                                <ToolbarSpacer/>
+                                <Button text="{i18n>upload}" press="onFileUpload" />
+                                <Button text="{i18n>edit}" press="onEdit" enabled="{appModel>/enableEdit}"/>
+                                <Button text="{i18n>create}" press="onCreate"></Button>
+                                <Button text="{i18n>delete}" press="onDelete" enabled="{appModel>/enableDelete}"/>
+                                <Button icon="sap-icon://excel-attachment" text="{i18n>export}" press="onDownload" enabled="{appModel>/enableExport}"/>
+                            </OverflowToolbar>
+                        </t:extension>
+                        <t:columns>
+                            <t:Column width="7rem" sortProperty="site" filterProperty="site">
+                                <Label text="{i18n>dc}" />
+                                <t:template>
+                                    <Text text="{site}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="15rem" sortProperty="StoreDescription" filterProperty="StoreDescription">
+                                <Label text="{i18n>dcdesc}" />
+                                <t:template>
+                                    <Text text="{StoreDescription}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="7rem" sortProperty="article" filterProperty="article">
+                                <Label text="{i18n>article}" />
+                                <t:template>
+                                    <Text text="{article}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="16rem" sortProperty="artDesc" filterProperty="artDesc">
+                                <Label text="{i18n>artDesc}" />
+                                <t:template>
+                                    <Text text="{artDesc}" />
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="10rem" filterType="sap.ui.model.type.Date" filterProperty="validFrom" sortProperty="validFrom">
+                                <Label text="{i18n>validFrom}" />
+                                <t:template>
+                                     <Text  id="idValidFrm" text="{path:'validFrom', formatter:'.dateFormat'}"></Text>
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="10rem" filterType="sap.ui.model.type.Date" filterProperty="validTo" sortProperty="validTo">
+                                <Label text="{i18n>validTo}" />
+                                <t:template>
+                                    <DatePicker id="idValidTo" value="{path:'validTo', formatter:'.dateFormat'}" editable="{IsFlagEditTrue}" 
+                                            valueFormat= "yyyy-MM-dd" displayFormat="yyyy-MM-dd" change="onDatePickerChange" valueState="{path: 'validTo', formatter: '.valueState'}"/>
+                                </t:template>
+                            </t:Column>
+                            <t:Column width="7rem" filterProperty="sftyDcQty" sortProperty="sftyDcQty">
+                                <Label text="{i18n>quantity}" />
+                                <t:template>
+                                    <MaskInput placeholderSymbol=" " mask="9999999999999" value="{sftyDcQty}"
+                                       editable="{IsFlagEditTrue}"/>
+                                </t:template>
+                            </t:Column>
+                        </t:columns>
+                    </t:Table>
+                </f:content>
+            </f:DynamicPage>
+        </content>
+        <footer>
+            <OverflowToolbar visible="{appModel>/active}">
+                <content>
+                    <ToolbarSpacer/>
+                    <Button text="{i18n>save}" type="Emphasized" press="onSave" />
+                    <Button text="{i18n>cancel}" press="onCancel"/>
+                </content>
+            </OverflowToolbar>
+        </footer>
+    </Page>
+</mvc:View>

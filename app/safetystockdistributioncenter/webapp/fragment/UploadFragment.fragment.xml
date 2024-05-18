@@ -1,0 +1,19 @@
+<core:FragmentDefinition id="idItemUploadFragment"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:u="sap.ui.unified"
+    xmlns:t="sap.ui.table">
+    <Dialog id="idUploadDialog" contentWidth="70%" contentHeight="30%" afterClose="onUploadDialogClose" title="{i18n>itemsUpload}">
+        <VBox id="idFileUploaderContainer" alignItems="Center" class="sapUiMediumMarginTop sapUiMediumMarginBeginEnd">
+            <HBox id="idHbox">
+                <u:FileUploader width="25rem" id="idFileUploader" placeholder="{i18n>selectFile}" change="onFileSelectionChange" name="myFileUpload" uploadComplete="onUploadComplete" fileType="xlsx" typeMissmatch="onTypeMismatched" />
+                <Button id="idUploadButton" text="{i18n>uploadProcess}" enabled="{UploadModel>/uploadBtnEnabled}" icon="sap-icon://back-to-top" press="onUploadPress" class="sapUiSmallMarginBegin" />
+                <Button id="idTemplate" text="{i18n>template}" press="onTemplateDownloadPress" icon="sap-icon://download" class="sapUiSmallMarginBegin" />
+                <Button id="idCheckLog" text="{i18n>checkLog}" press="onCheckLogPress" class="sapUiSmallMarginBegin" />
+            </HBox>
+        </VBox>
+        <buttons>
+            <Button id="idClose" text="{i18n>close}" press="onUploadDialogClose" />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

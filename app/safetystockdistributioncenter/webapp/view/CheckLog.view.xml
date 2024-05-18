@@ -1,0 +1,116 @@
+<mvc:View 
+    controllerName="safetystockdistributioncenter.controller.CheckLog"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m"
+    xmlns:f="sap.f"
+    xmlns:layout="sap.ui.layout"
+    xmlns:fb="sap.ui.comp.filterbar"
+    xmlns:core="sap.ui.core"
+    xmlns:t="sap.ui.table">
+        <Page title="{i18n>checkLog}" showNavButton="true" navButtonPress="onNavBack">
+            <content>
+                <f:DynamicPage showFooter="true" headerExpanded="true">
+                    <f:header>
+                        <f:DynamicPageHeader pinnable="true">
+                            <f:content>
+                                <fb:FilterBar class="sapUiTinyMargin" useToolbar="false" search="onSearch" showFilterConfiguration="false" showRestoreButton="true">
+                                    <fb:filterGroupItems>
+                                        <fb:FilterGroupItem groupName="checkLog" name="jobId" label="{i18n>jobId}" visibleInFilterBar="true">
+                                            <fb:control>
+                                                <MultiInput id="idJobId" valueHelpOnly="true" valueHelpRequest="onJobIdVHReq" tokenUpdate="onFiltersChange" width="1rem"></MultiInput>
+                                            </fb:control>
+                                        </fb:FilterGroupItem>
+                                    </fb:filterGroupItems>
+                                </fb:FilterBar>
+                            </f:content>
+                        </f:DynamicPageHeader>
+                    </f:header>
+                    <f:content>
+                        <t:Table id="idCheckLogTable" enableColumnFreeze="true" selectionMode="None"  ariaLabelledBy="title" visibleRowCount="10">
+                            <t:extension>
+                                <OverflowToolbar>
+                                    <Title text="{parts:['i18n>tableTitle','appModel>/errorTableCount']}"/>
+                                    <ToolbarSpacer/>
+                                    <Button icon="sap-icon://excel-attachment" text="{i18n>export}" press="onDownloadCheckLog" enabled="{= !!${appModel>/errorTableCount}}"/>
+                                </OverflowToolbar>
+                            </t:extension>
+                            <t:columns>
+                                <t:Column width="20rem" filterProperty="JobID" sortProperty="JobID">
+                                    <Label text="{i18n>jobId}" />
+                                    <t:template>
+                                        <Text text="{JobID}" />
+                                    </t:template>
+                                </t:Column>
+                                <t:Column width="6rem" filterProperty="createdBy" sortProperty="createdBy">
+                                    <Label text="{i18n>createdBy}" />
+                                    <t:template>
+                                        <Text text="{createdBy}" />
+                                    </t:template>
+                                </t:Column>
+                                <t:Column width="11rem" filterProperty="createdAt" sortProperty="createdAt">
+                                    <Label text="{i18n>createdAt}" />
+                                    <t:template>
+                                        <Text text="{createdAt}" />
+                                    </t:template>
+                                </t:Column>
+                                <t:Column width="5rem" filterProperty="site" sortProperty="site">
+                                    <Label text="{i18n>site}" />
+                                    <t:template>
+                                        <Text text="{site}" />
+                                    </t:template>
+                                </t:Column>
+                                <t:Column width="7rem" filterProperty="article" sortProperty="article">
+                                    <Label text="{i18n>article}" />
+                                    <t:template>
+                                        <Text text="{article}" />
+                                    </t:template>
+                                </t:Column>
+                                <t:Column width="8rem" filterProperty="fulfil" sortProperty="fulfil">
+                                    <Label text="{i18n>fulfilMethod}" />
+                                    <t:template>
+                                        <Text text="{fulfil}" />
+                                    </t:template>
+                                </t:Column>
+                                 <t:Column width="6rem" filterProperty="status" sortProperty="status">
+                                    <Label text="{i18n>status}" />
+                                    <t:template>
+                                        <Text text="{status}" />
+                                    </t:template>
+                                </t:Column>
+                                <t:Column width="6rem" filterProperty="validFrom" sortProperty="validFrom">
+                                    <Label text="{i18n>validFrom}" />
+                                    <t:template>
+                                        <Text text="{validFrom}" />
+                                    </t:template>
+                                </t:Column>
+                                <t:Column width="6rem" filterProperty="validTo" sortProperty="validTo">
+                                    <Label text="{i18n>validTo}" />
+                                    <t:template>
+                                        <Text text="{validTo}" />
+                                    </t:template>
+                                </t:Column>
+                                <t:Column width="7rem" filterProperty="sftyTotPer" sortProperty="sftyTotPer">
+                                    <Label text="{i18n>percentage}" />
+                                    <t:template>
+                                        <Text text="{sftyTotPer}" />
+                                    </t:template>
+                                </t:Column>
+                                <t:Column width="7rem" filterProperty="sftyDcQty" sortProperty="sftyDcQty">
+                                    <Label text="{i18n>dcQty}" />
+                                    <t:template>
+                                        <Text text="{sftyDcQty}" />
+                                    </t:template>
+                                </t:Column>
+                                <t:Column width="20rem" filterProperty="error" sortProperty="error">
+                                    <Label text="{i18n>error}" />
+                                    <t:template>
+                                        <Text text="{error}" />
+                                    </t:template>
+                                </t:Column>
+                            </t:columns>
+                        </t:Table>
+                    </f:content>
+                </f:DynamicPage>
+            </content>
+        </Page>
+</mvc:View>

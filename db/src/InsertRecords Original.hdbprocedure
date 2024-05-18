@@ -1,0 +1,261 @@
+PROCEDURE InsertDataAndLogErrors (
+  IN datatoinsert    TTERROR,
+  IN USER VARCHAR(100),
+  IN JOBID VARCHAR(200),
+  IN CREATED_AT VARCHAR(200)
+  
+  
+)
+LANGUAGE SQLSCRIPT
+SQL SECURITY INVOKER
+AS
+BEGIN
+  DECLARE errorCount INTEGER = 0;
+  
+  
+   DECLARE CURSOR c_data for select * from :datatoinsert;
+    -- DECLARE CURSOR c_material for select * from :Material;
+    
+ 
+  DECLARE  site NVARCHAR(4);
+  DECLARE   article NVARCHAR(18);
+  DECLARE   lv_article NVARCHAR(18);
+  DECLARE  v_site NVARCHAR(4);
+  DECLARE   v_article NVARCHAR(18);
+  DECLARE fulfil NVARCHAR(20);
+  DECLARE  status NVARCHAR(40);
+  DECLARE  validFrom NVARCHAR(10);
+  DECLARE validTo NVARCHAR(10);
+  DECLARE status_ID  NVARCHAR(1);
+  DECLARE siteCategoryCatID NVARCHAR(1);
+
+  DECLARE artdesc NVARCHAR(40);
+  DECLARE sftyBOPper INTEGER;
+  DECLARE sftySFSper INTEGER;
+  DECLARE sftyTotPer INTEGER;
+  DECLARE sftyDCper INTEGER;
+  DECLARE sftyDcQty DECIMAL(16);
+  DECLARE StoreDescription NVARCHAR(40);
+  DECLARE EX_MESSAGE VARCHAR(5000);
+  DECLARE JOB VARCHAR(200);
+  DECLARE CREATEDAT TIMESTAMP;
+DECLARE CREATEDBY NVARCHAR(255);
+DECLARE MODIFIEDAT TIMESTAMP;
+  DECLARE MODIFIEDBY NVARCHAR(255);
+    DECLARE itMaterialsIn TTITEM;
+    DECLARE itMaterialsOut TTITEM;
+    declare v_count INTEGER;
+    DECLARE errorcode NVARCHAR(30);
+    declare schema_var NVARCHAR(20);
+    DECLARE lv_date DATE;
+    DECLARE lv_datetemp NVARCHAR(20);
+    declare interimMessage NVARCHAR(5000);
+    declare tmpvalidfrom DATE;
+    declare tmpvalidto DATE;
+    declare tmpvalidfromErr NVARCHAR(10);
+    declare tmpvalidtoErr NVARCHAR(10);
+    DECLARE i int;
+ 
+ DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+  BEGIN
+    -- errorcode =
+  if ::SQL_ERROR_CODE = 301 THEN
+    EX_MESSAGE = 'Record already exists';
+    ELSE
+      EX_MESSAGE := 'SQL Exception occured. Error Code is: ' || ::SQL_ERROR_CODE || ' Error message is: ' || ::SQL_ERROR_MESSAGE;
+  end if;
+    
+   JOB =:JOBID;
+   
+  
+  END;
+ 
+
+  SELECT top 1 CURRENT_DATE,
+      TO_VARCHAR (TO_DATE(CURRENT_DATE), 'MM/DD/YYYY') into lv_Date, lv_Datetemp       
+   
+  FROM SAFETYSTOCK_STATUS;
+
+ -- Fetch site material combination from ItemEligibilityMaster
+
+ itMaterialsIn = select site, article from :datatoinsert;
+     
+FOR c_data_row AS c_data DO
+  EX_MESSAGE = '';
+  CREATEDAT =:CREATED_AT;
+  MODIFIEDAT =:CREATED_AT;
+  CREATEDBY =:USER;
+  MODIFIEDBY =:USER;
+    fulfil =:c_data_row.fulfil;
+    status =:c_data_row.status;
+
+    validFrom =:c_data_row.validFrom;
+    validTo =:c_data_row.validTo;
+    validTo =:c_data_row.validTo;
+
+
+    status_ID = '';
+    if fulfil = 'B' or fulfil = 'S' THEN
+      siteCategoryCatID = 'A';
+      
+      ELSE siteCategoryCatID = 'B';
+    end if;
+    
+
+    artdesc = '';
+    StoreDescription ='';
+  
+    sftyTotPer = c_data_row.sftyTotPer;
+    sftyBOPper = 0;
+    sftySFSper = 0;
+    sftyDcQty = c_data_row.sftyDcQty;
+    sftyDCper  = 0;
+    
+    if fulfil = 'B' THEN
+      -- sftyTotPer = c_data_row.sftyTotPer;
+    sftyBOPper = c_data_row.sftyTotPer;
+    end if;
+
+      if fulfil = 'S' THEN
+        -- sftyTotPer = c_data_row.sftyTotPer;
+        sftySFSper = c_data_row.sftyTotPer;
+      end if;
+
+    
+
+    site =:c_data_row.site;
+    article =:c_data_row.article;
+    artdesc = :c_data_row.article_desc;
+  
+    -- Interim message that will attach to all error messages
+    interimMessage := '';
+    interimMessage := 'Article' || ' '  || :article  || ' ' || 'with Store' || ' ' ||  :Site || ' ' ;
+  
+  -- **************Check start and end dates
+  
+  tmpvalidfrom = '';
+  tmpvalidto = '';
+
+  -- **convert the incoming from and to dates from string to date format for comparing -- with System Date
+  SELECT TOP 1 TO_VARCHAR(TO_DATE(validfrom, 'MM/DD/YYYY'), 'YYYY-MM-DD'),
+  TO_VARCHAR(TO_DATE(validto, 'MM/DD/YYYY'), 'YYYY-MM-DD') into  tmpvalidfrom, tmpvalidto 
+  FROM SAFETYSTOCK_STATUS;
+
+  tmpvalidfromerr := tmpvalidfrom;
+  tmpvalidtoerr := tmpvalidto;
+  -- -- ********Check for From Date
+  if tmpvalidfrom >= lv_date THEN
+    -- if validFrom >= '1/12/2024' THEN
+    if  tmpvalidfrom <= tmpvalidto THEN
+    
+      ELSE EX_MESSAGE := 'Start Date is greater than End date for' || ' ' || interimMessage;
+       end if;
+      ELSE EX_MESSAGE := 'Start date cannot be in past.';
+  end if;
+  -- -- ********Check for To Date
+  if EX_MESSAGE = '' THEN
+    if tmpvalidto >= tmpvalidfrom THEN
+      
+        --  ************** Validate SFS percentage
+        if  fulfil = 'S'  THEN
+  if sftyTotPer > 0 THEN
+    if sftyTotPer > 100 THEN
+     EX_MESSAGE := 'SFS percentage cannot be greater than 100 for record' || ' ' || interimMessage;
+  end if;
+
+  else EX_MESSAGE := 'SFS percentage cannot be zero';
+  end if;
+  end if;
+  -- Start of Change April 16 2024
+-- ************** Validate SFS percentage
+  if fulfil = 'B'  THEN
+  if sftyBOPper > 0 THEN
+  if sftyBOPper > 100 THEN
+   EX_MESSAGE := 'BOPIS percentage cannot be greater than 100 for record' || ' ' || interimMessage;
+end if;
+else EX_MESSAGE := 'BOPIS percentage cannot be zero';
+end if;
+-- End of Change April 16, 2024
+
+  end if;
+    ELSE EX_MESSAGE := 'End date is less than Start date for' || ' ' || interimMessage;
+    end if;
+  end if;
+
+    if fulfil = 'D' THEN
+      if sftyDcQty <= 0 THEN 
+        EX_MESSAGE := 'DC quantity cannot be zero';
+      end if;
+    end IF;
+-- *****************************Validate Material site combination in case there are no previous validation errors
+v_article = '';
+v_site = '';
+
+-- Check for overlapping records--Any record already present with same Store, Article, fulfillment method 
+  if EX_MESSAGE = '' THEN
+    
+  Material = SELECT *
+             from SAFETYSTOCK_ZMM_SAFETYSTOCK_OMS
+             where site = :SITE
+             and article = :article
+             and fulfil = :fulfil;
+             
+
+
+if :Material.article[1] != '' THEN
+  lv_article = '';
+   if (EXISTS(SELECT  1  article 
+         from :Material
+    WHERE ( site = :site and article = :article and fulfil = :fulfil 
+  and ( (validfrom <= :tmpvalidfrom and validto >= :tmpvalidfrom ) OR
+   (validto >= :tmpvalidto and validfrom <= :tmpvalidto ) OR
+   (validfrom >= :tmpvalidfrom and validto <= :tmpvalidto ))) )) THEN
+  EX_MESSAGE = 'Overlapping record exists with' || ' ' || interimMessage;
+  end if;
+  
+  
+end if;
+end if;
+  
+if EX_MESSAGE = '' THEN
+INSERT INTO SAFETYSTOCK_ZMM_SAFETYSTOCK_OMS (CREATEDAT, CREATEDBY, MODIFIEDAT, MODIFIEDBY, SITE, ARTICLE, FULFIL, VALIDFROM, VALIDTO, SITECATEGORY, STATUS, ARTDESC, SFTYBOPPER, SFTYSFSPER, SFTYTOTPER, SFTYDCQTY, ISFLAGEDITTRUE)
+           VALUES (CREATEDAT, CREATEDBY, MODIFIEDAT, MODIFIEDBY, site, article, fulfil, tmpvalidfrom, tmpvalidto, siteCategoryCatID, 'A', artdesc, sftyBOPper, sftySFSper, sftyTotPer, sftyDcQty, false );
+
+      if EX_MESSAGE != '' THEN
+
+--Begin Repelaced the insert code with update March 03, 2024
+        -- INSERT INTO SAFETYSTOCK_ZMM_SAFETYSTOCK_ERRSTG ( JobID, site, article, FULFIL, STATUS, validFrom, validTo, sftyTotPer, sftyDcQty, error )
+        -- VALUES ( JobID, site, article, fulfil, status, tmpvalidfrom, tmpvalidto, sftyTotPer, sftyDcQty, EX_MESSAGE);
+--End Repelaced the insert code with update March 03, 2024       
+    
+        UPDATE SAFETYSTOCK_ZMM_SAFETYSTOCK_ERRSTG set error =  EX_MESSAGE, sftyTotPer = :sftyTotPer,
+        sftyDcQty = :sftyDcQty
+        WHERE ( jobID = :JobID and site = :site and article = :article and FULFIL = :fulfil and validFrom = :tmpvalidfrom and validto = :tmpvalidtoerr );
+
+--Begin ELSE condition March 03, 2024   
+-- Added else code to delete records that got posted successfully in SafetyStock Master 
+      ELSE
+        DELETE from SAFETYSTOCK_ZMM_SAFETYSTOCK_ERRSTG 
+        WHERE ( jobID = :JobID and site = :site and article = :article and FULFIL = :fulfil and validFrom = :tmpvalidfromerr and validto = :tmpvalidtoerr );
+--End ELSE condition March 03, 2024     
+      end if;
+          ELSE 
+  -- EX_MESSAGE = 'Article' || ' '  || :article  || ' ' || 'with Store' || ' ' ||  :Site || ' ' || 'does not exists in item eligibility table';
+  
+--Begin Repelaced the insert code with update March 03, 2024
+  -- INSERT INTO SAFETYSTOCK_ZMM_SAFETYSTOCK_ERRSTG ( JobID, site, article, FULFIL, STATUS, validFrom, validTo, sftyTotPer, sftyDcQty, error )
+  -- VALUES ( JobID, site, article, fulfil, status, tmpvalidfrom, tmpvalidto, sftyTotPer, sftyDcQty, EX_MESSAGE);
+--End Repelaced the insert code with update March 03, 2024 
+UPDATE SAFETYSTOCK_ZMM_SAFETYSTOCK_ERRSTG set error =  EX_MESSAGE, sftyTotPer = :sftyTotPer,
+        sftyDcQty = :sftyDcQty
+        WHERE ( jobID = :JobID and site = :site and article = :article and FULFIL = :fulfil and validFrom = :tmpvalidfromerr and validto = :tmpvalidtoerr );
+end if;
+  END FOR;
+
+ 
+
+  
+
+   
+
+END;

@@ -1,0 +1,36 @@
+<mvc:View controllerName="safetystockdistributioncenter.controller.Create"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m"
+    xmlns:l="sap.ui.layout"
+    xmlns:ui="sap.ui.table"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core">
+    <Page title="{i18n>title}" visible = "{appModel>/enableCreateForm}" showNavButton="true" navButtonPress="onNavBack">
+        <content>
+            <f:SimpleForm editable="true" layout="ColumnLayout" columnsXL="6" columnsL="3" columnsM="2">
+                <f:content>
+                    <core:Title />
+                    <Label text="{i18n>site}" required="true" />
+                    <MultiInput id="createSite" valueHelpOnly="true" valueHelpRequest="onStoreIdVHReq"  placeholder="{i18n>enterSite}" showSuggestion="true" showValueHelp="true" />
+                    <Label text="{i18n>article}" required="true" />
+                    <MultiInput id="createArticle" valueHelpOnly="true" valueHelpRequest="onArticleIdVHReq"  placeholder="{i18n>enterArticle}" showSuggestion="true" showValueHelp="true" />
+                    <Label text="{i18n>quantity}" required="true" />
+                    <MaskInput id="createQuantity" placeholderSymbol=" " mask="9999999999999" placeholder="{i18n>enterQuantity}" value="{appModel>/createData>quantity}" liveChange="quantityCheck" />
+                    <core:Title />
+                    <Label text="{i18n>validFrom}" required="true" />
+                    <DatePicker id="sfsStartDate" placeholder="{i18n>enterDate}"  valueFormat="yyyy-MM-dd" displayFormat="yyyy-MM-dd" class="sapUiSmallMarginBottom" change="sfsStartDateChange"/>
+                    <Label text="{i18n>validTo}" required="true" />
+                    <DatePicker id="sfsEndDate" placeholder="{i18n>enterDate}" valueFormat="yyyy-MM-dd" displayFormat="yyyy-MM-dd" class="sapUiSmallMarginBottom" change="sfsEndDateChange"/>
+                    <core:Title />
+                    <Label text="" />
+                </f:content>
+            </f:SimpleForm>
+            <OverflowToolbar>
+                <ToolbarSpacer/>
+                <Button text="{i18n>save}" type="Emphasized" press="onCreateSave" class="sapUiResponsiveContentPadding" />
+                <Button text="{i18n>cancel}" type="Emphasized" press="onCreateCancel" />
+            </OverflowToolbar>
+        </content>
+    </Page>
+</mvc:View>

@@ -1,0 +1,14 @@
+TYPE "TTSAFETYMASTER" AS TABLE (
+    site          NVARCHAR(4),
+    article       NVARCHAR(18),
+    FULFIL_METHOD        NVARCHAR(1),
+    validFrom     NVARCHAR(25),
+    validTo       NVARCHAR(25),
+    SITECATEGORYS_CATEGORYID NVARCHAR(1),
+    STATUS_STATUSID       NVARCHAR(1), 
+    artDesc       NVARCHAR(40),
+    sftyBopPer    INTEGER,
+    sftySfsPer    INTEGER,
+    sftyTotPer    INTEGER,
+    sftyDcQty     DECIMAL(13, 3)
+);

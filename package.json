@@ -1,0 +1,55 @@
+{
+    "name": "SAFETYSTOCK_MM",
+    "version": "1.0.0",
+    "description": "A simple CAP project.",
+    "repository": "<Add your repository here>",
+    "license": "UNLICENSED",
+    "private": true,
+    "dependencies": {
+        "@sap-cloud-sdk/http-client": "^3.15.0",
+        "@sap-cloud-sdk/resilience": "^3.15.0",
+        "@sap/cds": "^7",
+        "@sap/cds-hana": "^2",
+        "date-and-time": "^3.2.0",
+        "express": "^4",
+        "xlsx": "^0.18.5"
+    },
+    "devDependencies": {
+        "@cap-js/sqlite": "^1",
+        "@sap/cds-dk": "^7",
+        "@sap/eslint-plugin-cds": "^3",
+        "@sap/ux-specification": "^1.120.10",
+        "eslint": "^9",
+        "rimraf": "^3.0.2"
+    },
+    "scripts": {
+        "start": "cds-serve",
+        "watch-safetystockdistributioncenter": "cds watch --open safetystockdistributioncenter/webapp/index.html?sap-ui-xx-viewCache=false",
+        "undeploy": "cf undeploy SAFETYSTOCK_MM --delete-services --delete-service-keys --delete-service-brokers",
+        "build": "rimraf resources mta_archives && mbt build --mtar archive",
+        "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
+    },
+    "cds": {
+        "requires": {
+            "db": "hana",
+            "ZMM_VALIDATE_STORE_SRV": {
+                "kind": "odata-v2",
+                "model": "srv/external/ZMM_VALIDATE_STORE_SRV",
+                "credentials": {
+                    "destination": "S4_HTTP_BA_CYCLECOUNT",
+                    "path": "/sap/opu/odata/sap/ZMM_VALIDATE_STORE_SRV",
+                    "forwardAuthToken": true
+                }
+            },
+            "API_PRODUCT_SRV": {
+                "kind": "odata-v2",
+                "model": "srv/external/API_PRODUCT_SRV",
+                "credentials": {
+                    "destination": "S4_HTTP_BA_CYCLECOUNT",
+                    "path": "/sap/opu/odata/sap/API_PRODUCT_SRV",
+                    "forwardAuthToken": true
+                }
+            }
+        }
+    }
+}

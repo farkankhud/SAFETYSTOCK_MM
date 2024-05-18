@@ -1,0 +1,5 @@
+TYPE "TTITEM" AS TABLE (
+    site          NVARCHAR(4),
+    article       NVARCHAR(18)
+    
+);

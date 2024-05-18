@@ -1,0 +1,13 @@
+<core:FragmentDefinition xmlns="sap.ui.comp.valuehelpdialog"
+	xmlns:m="sap.m"
+	xmlns:fb="sap.ui.comp.filterbar"
+	xmlns:core="sap.ui.core">
+	<ValueHelpDialog supportRanges="{appModel>/enableSiteSupportRanges}" id="idSiteValueHelp" title="{i18n>site}" ok=".onSiteCodeValueHelpOkPress" cancel=".onSiteValueHelpCancelPress" afterClose="onStoreAfterClose">
+		<filterBar>
+			<fb:FilterBar id="idSiteFilterBar" advancedMode="true" search="onSiteFilterBarSearch">
+				<fb:filterGroupItems>	
+				</fb:filterGroupItems>
+			</fb:FilterBar>
+		</filterBar>
+	</ValueHelpDialog>
+</core:FragmentDefinition>

@@ -1,0 +1,13 @@
+TYPE "TTERROR" AS TABLE (
+   JobID NVARCHAR(200),
+    site NVARCHAR(4),
+    article NVARCHAR(18),
+    fulfil NVARCHAR(20),
+    status NVARCHAR(40),
+    validFrom NVARCHAR(25),
+    validTo NVARCHAR(25),
+    sftyTotPer INTEGER,
+    sftyDcQty DECIMAL(16),
+    error NVARCHAR(100),
+    article_desc NVARCHAR(40)
+);
