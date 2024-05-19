@@ -2,7 +2,7 @@
 	xmlns:m="sap.m"
 	xmlns:fb="sap.ui.comp.filterbar"
 	xmlns:core="sap.ui.core">
-	<ValueHelpDialog supportRanges="{appModel>/enableArticleSupportRanges}" id="idArticleValueHelp" title="{i18n>article}" ok=".onArticleValueHelpOkPress" cancel=".onArticleValueHelpCancelPress"  key="ArticleNumber" afterClose="onArticleAfterClose">
+	<ValueHelpDialog supportRanges="{appModel>/enableArticleSupportRanges}" id="idArticleValueHelp" title="{i18n>article}" ok=".onArticleValueHelpOkPress" cancel=".onArticleValueHelpCancelPress"  key="article" afterClose="onArticleAfterClose">
 		<filterBar>
 			<fb:FilterBar id="idArticleFilterBar" advancedMode="true" search="onArticleFilterBarSearch">
 				<fb:filterGroupItems>	

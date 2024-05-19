@@ -819,27 +819,27 @@ module.exports = srv => {
 
         let store_list = [];
         if (res.results.length > 0) {
-          // Fetch the store decription
-          for (const item of res.results) {
-            store_list.push(item['site'])
-          }
-          var storeservice = await cds.connect.to('ZMM_VALIDATE_STORE_SRV');
-          stores = await storeservice.run(SELECT`Store,StoreDescription`.from('StoreIdSet').where`Store in ${store_list}`);
+        //   // Fetch the store decription
+        //   for (const item of res.results) {
+        //     store_list.push(item['site'])
+        //   }
+        //   var storeservice = await cds.connect.to('ZMM_VALIDATE_STORE_SRV');
+        //   stores = await storeservice.run(SELECT`Store,StoreDescription`.from('StoreIdSet').where`Store in ${store_list}`);
 
-          // Accommodate store description in the array
-          if (res.results.length > 0) {
+        //   // Accommodate store description in the array
+        //   if (res.results.length > 0) {
             res.results['$count'] = res.results.length;
-          }
+        //   }
 
-          for (let i = 0; i < res.results.length; i++) {
-            let elementA = res.results[i];
-            // Find corresponding element in arrayB
-            let elementB = stores.find(item => item.Store === elementA.site);
-            if (elementB) {
-              // Update value in arrayA
-              elementA.StoreDescription = elementB.StoreDescription;
-            }
-          }
+        //   for (let i = 0; i < res.results.length; i++) {
+        //     let elementA = res.results[i];
+        //     // Find corresponding element in arrayB
+        //     let elementB = stores.find(item => item.Store === elementA.site);
+        //     if (elementB) {
+        //       // Update value in arrayA
+        //       elementA.StoreDescription = elementB.StoreDescription;
+        //     }
+        //   }
 
         }
 
@@ -1266,10 +1266,10 @@ module.exports = srv => {
       article = PadMaterial(req.data.article);
       // if (req.data.fulfil == 'D') {
       var service = await cds.connect.to('API_PRODUCT_SRV');
-      product = await service.run(SELECT`Product,ProductDescription`.from('A_ProductDescription').limit(1, 0).where({ Product: req.data.article }));
-      if (product) {
-        req.data.artDesc = product[0].ProductDescription;
-      }
+      // product = await service.run(SELECT`Product,ProductDescription`.from('A_ProductDescription').limit(1, 0).where({ Product: req.data.article }));
+      // if (product) {
+      //   req.data.artDesc = product[0].ProductDescription;
+      // }
 
       // Populate store description before pushing the data
       let article_service = await cds.connect.to('API_PRODUCT_SRV');
@@ -1277,38 +1277,11 @@ module.exports = srv => {
         req.data.siteCategory = 'B';
         req.data.sftyBopPer = 0;
         req.data.status = 'A';
-        if (req.data.IsFlagEditTrue == '' || req.data.IsFlagEditTrue == null) {
-          req.data.IsFlagEditTrue = false;
-        }
-        // let article_service = await cds.connect.to('API_PRODUCT_SRV');
-        result = await article_service.run(SELECT`Product,Plant`.from('A_ProductPlant').where`Product = ${req.data.article} and Plant = ${req.data.site}`);
-
-
-        if (result.length == 0) {
-
-          errmsg = 'Article' + ' ' + req.data.article + ' ' + 'with DC' + '  ' + req.data.site + ' ' + 'does not exists in MARC table';
-          return errmsg;
-        } else {
+       
           const insertQuery = INSERT.into(entity).entries(req.data);
           insertResult = await srv.run(insertQuery);
-        }
-
-      } else { //SFS/BOPIS Data
-        req.data.siteCategory = 'A';
-        req.data.status = 'A';
-        if (req.data.IsFlagEditTrue == '' || req.data.IsFlagEditTrue == null) {
-          req.data.IsFlagEditTrue = false;
-        }
-        // Pad the stores with leading zeroes
-        if (req.data.site != '') {
-          store = PadStore(req.data.site);
-        }
-        const newArticle = Number(req.data.article).toString();
-        req.data.article = newArticle;
-        const insertQuery = INSERT.into(entity).entries(req.data);
-        insertResult = await srv.run(insertQuery);
-
-      }
+       
+      } 
 
     } catch (error) {
 
